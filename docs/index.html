@@ -28,7 +28,21 @@
         <canvas id="pdfViewer"></canvas>
     </div>
 
-    <!-- Load PDF.js as module -->
+    <!-- Load PDF.js as module with polyfill -->
+    <script>
+        // Polyfill for Promise.withResolvers if needed
+        if (typeof Promise.withResolvers === 'undefined') {
+            Promise.withResolvers = function() {
+                let resolve, reject;
+                const promise = new Promise((res, rej) => {
+                    resolve = res;
+                    reject = rej;
+                });
+                return { promise, resolve, reject };
+            };
+        }
+    </script>
+    
     <script type="module">
         // Import PDF.js from the mjs file
         import * as pdfjsLib from './pdfjs-5.2.133-dist/build/pdf.mjs';
@@ -37,7 +51,12 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = './pdfjs-5.2.133-dist/build/pdf.worker.mjs';
         
         // Load the PDF
-        const loadingTask = pdfjsLib.getDocument('./AlvaroPASTOR_2025.pdf');
+        const loadingTask = pdfjsLib.getDocument({
+            url: './AlvaroPASTOR_2025.pdf',
+            // Enable compatibility mode for older browsers
+            disableAutoFetch: true,
+            disableStream: true
+        });
         
         loadingTask.promise.then(function(pdf) {
             console.log('PDF loaded');
