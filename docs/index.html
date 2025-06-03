@@ -28,11 +28,13 @@
         <canvas id="pdfViewer"></canvas>
     </div>
 
-    <!-- PDF.js Scripts -->
-    <script src="./pdfjs-5.2.133-dist/build/pdf.js"></script>
-    <script>
-        // Set the path to the worker script
-        pdfjsLib.GlobalWorkerOptions.workerSrc = './pdfjs-5.2.133-dist/build/pdf.worker.js';
+    <!-- Load PDF.js as module -->
+    <script type="module">
+        // Import PDF.js from the mjs file
+        import * as pdfjsLib from './pdfjs-5.2.133-dist/build/pdf.mjs';
+        
+        // Set worker path (note the .mjs extension)
+        pdfjsLib.GlobalWorkerOptions.workerSrc = './pdfjs-5.2.133-dist/build/pdf.worker.mjs';
         
         // Load the PDF
         const loadingTask = pdfjsLib.getDocument('./AlvaroPASTOR_2025.pdf');
@@ -71,7 +73,7 @@
             const container = document.getElementById('pdfViewerContainer');
             container.innerHTML = `
                 <p>Failed to load PDF. You can <a href="./AlvaroPASTOR_2025.pdf" target="_blank">download the PDF here</a>.</p>
-                 
+                <p>If you believe this is an error, please try again later.</p>
             `;
         });
     </script>
