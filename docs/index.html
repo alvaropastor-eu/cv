@@ -4,29 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AlvaroPASTOR</title>
-     <style>
-        
+    <style>
         body, html {
             margin: 0;
             padding: 0;
-            height: 100%;   width: 100%; 
+            height: 100%; 
+            width: 100%; 
             overflow: hidden;  
         }
-        #pdfViewerFrame {
+        #pdfViewerContainer {
             width: 100%;
             height: 100%;
-            border: none;  display: block;
+            position: absolute;
         }
-         #pdfObject {
+        #pdfViewer {
             width: 100%;
             height: 100%;
-            border: none;  
-            display: block;  
         }
     </style>
 </head>
 <body>
-<object id="pdfObject" data="./AlvaroPASTOR_2025.pdf" type="application/pdf">
-        <p>Your browser does not support embedding PDFs directly. You can <a href="./AlvaroPASTOR_2025.pdf" target="_blank">download the PDF here</a>.</p>
-    </object></body>
+    <div id="pdfViewerContainer">
+        <canvas id="pdfViewer"></canvas>
+    </div>
+
+    <!-- PDF.js Scripts -->
+    <script src="./pdfjs-5.2.133-dist/build/pdf.js"></script>
+    <script>
+        // Set the path to the worker script
+        pdfjsLib.GlobalWorkerOptions.workerSrc = './pdfjs-5.2.133-dist/build/pdf.worker.js';
+        
+        // Load the PDF
+        const loadingTask = pdfjsLib.getDocument('./AlvaroPASTOR_2025.pdf');
+        
+        loadingTask.promise.then(function(pdf) {
+            console.log('PDF loaded');
+            
+            // Fetch the first page
+            pdf.getPage(1).then(function(page) {
+                console.log('Page loaded');
+                
+                const scale = 1.5;
+                const viewport = page.getViewport({ scale: scale });
+                
+                // Prepare canvas
+                const canvas = document.getElementById('pdfViewer');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                
+                // Render PDF page into canvas context
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                
+                const renderTask = page.render(renderContext);
+                renderTask.promise.then(function() {
+                    console.log('Page rendered');
+                });
+            });
+        }).catch(function(reason) {
+            console.error('Error: ', reason);
+            
+            // Fallback content if PDF.js fails
+            const container = document.getElementById('pdfViewerContainer');
+            container.innerHTML = `
+                <p>Failed to load PDF. You can <a href="./AlvaroPASTOR_2025.pdf" target="_blank">download the PDF here</a>.</p>
+                 
+            `;
+        });
+    </script>
+</body>
 </html>
