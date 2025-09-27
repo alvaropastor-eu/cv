@@ -13,23 +13,62 @@
             overflow: hidden;
             font-family: Arial, sans-serif;
         }
-        #header {
-            height: 20px;
-            background: #f5f5f5;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            font-size: 14px;
-        }
-        #header a {
-            color: #0066cc;
-            text-decoration: none;
-            margin-left: 20px;
-        }
-        #header a:hover {
-            text-decoration: underline;
-        }
+      #header {
+    height: 40px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 14px;
+    position: relative;
+    box-sizing: border-box; /* Ensures padding doesn't break layout */
+}
+
+#header strong {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%); /* Safari support */
+    text-align: center;
+    width: auto;
+}
+
+#header a {
+    color: #0066cc;
+    text-decoration: none;
+    margin-left: auto; /* Pushes to right */
+    white-space: nowrap; /* Prevents text wrapping */
+}
+
+#header a:hover {
+    text-decoration: underline;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+    #header {
+        height: 50px;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 5px 10px;
+    }
+    
+    #header strong {
+        position: static;
+        transform: none;
+        -webkit-transform: none;
+        order: 1;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+    
+    #header a {
+        margin-left: 0;
+        order: 2;
+    }
+}
         #viewerContainer {
             position: absolute;
             width: 100%;
