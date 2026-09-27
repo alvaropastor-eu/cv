@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Alvaro Pastor — Virtual Reality &amp; Cognitive Science</title>
+<meta name="description" content="Virtual Reality and Cognitive Science research by Alvaro Pastor, PhD. Emotion, cognition, and immersive systems.">
+<meta name="keywords" content="Virtual Reality,Cognitive Science,Emotion,Cognition,Immersive Systems">
+<meta name="author" content="Alvaro Pastor">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#10051a">
+<link rel="canonical" href="https://alvaropastor.eu/x/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Alvaro Pastor — VR &amp; Cognitive Science">
+<meta property="og:description" content="Virtual Reality and Cognitive Science research by Alvaro Pastor, PhD.">
+<meta property="og:url" content="https://alvaropastor.eu/x/">
+<meta property="og:image" content="https://alvaropastor.eu/x/preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Alvaro Pastor — VR &amp; Cognitive Science">
+<meta name="twitter:description" content="Virtual Reality and Cognitive Science research by Alvaro Pastor, PhD.">
+<meta name="twitter:image" content="https://alvaropastor.eu/x/preview.png">
+<link href="https://fonts.googleapis.com/css?family=Raleway:400,700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;padding:0;overflow:hidden;font-family:Raleway,sans-serif;background:#111}
+body{background-image:radial-gradient(circle,#000,#10051a)!important}
+.wrapper{position:absolute;inset:0;z-index:1}
+footer{position:absolute;bottom:0;left:0;width:100%;height:70px;display:inline-block;background:#3B2A54;opacity:.8;z-index:100}
+footer .copyright{width:50%;float:left}
+footer .copyright p{padding-left:10%;color:#fff;font-size:.7em;line-height:70px;text-transform:capitalize;letter-spacing:1px}
+footer .social{width:50%;float:right}
+footer .social a{float:right;line-height:70px;text-decoration:none;color:#fff;text-align:center;font-weight:700;transition:all .3s}
+footer .social a:hover{background-color:#000!important;transition:all .3s!important}
+.linked{background-color:#9966ff;font-size:1.2em;width:20%;opacity:.8}
+.orcid{background-color:#9556ff;font-size:1.2em;width:20%;opacity:.8}
+.www{background-color:#a556ff;font-size:1.2em;width:20%;opacity:.8}
+@media (max-width:600px){
+footer .copyright,footer .social{width:50%}
+footer .copyright p{text-align:center;padding:0}
+}
+</style>
+</head>
+<body>
+<script id="vs" type="x-shader/x-vertex">
+varying vec3 vPos;uniform float uTick;const float PI=3.1415926;
+mat2 calcRotate2D(float t){float s=sin(t);float c=cos(t);return mat2(c,s,-s,c);}
+vec3 paramFunction1(){float u=-uv.x*2.0*PI;float v=uv.y*PI;return vec3(sin(u)*sin(v),cos(u)*sin(v),cos(v));}
+vec3 paramFunction2(){float a=3.0;float n=3.0;float m=1.0;float u=uv.x*4.0*PI;float v=uv.y*2.0*PI;float r=a+cos(n*u/2.0)*sin(v)-sin(n*u/2.0)*sin(2.0*v);return vec3(r*cos(m*u/2.0),r*sin(m*u/2.0),sin(n*u/2.0)*sin(v)+cos(n*u/2.0)*sin(2.0*v));}
+void main(){float t=uTick*0.012;float r=cos(t*1.5+sin(t*1.5))*0.5+0.5;vec3 p=mix(paramFunction2(),paramFunction1()*1.5,r)*4.0;p.yz=calcRotate2D(t*0.6)*p.yz;p.xz=calcRotate2D(t*0.6)*p.xz;vPos=p;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);}
+</script>
+<script id="fs" type="x-shader/x-fragment">
+varying vec3 vPos;uniform float uTick;
+const vec3 objColor=vec3(1.0);const vec3 hemiLight_g=vec3(0);
+const vec3 hemiLight_s_1=vec3(0.1882352941176471,0.8274509803921568,0.9823529411764706);
+const vec3 hemiLight_s_2=vec3(0.9686274509803922,0.8509803921568627,0.9666666666666666);
+const vec3 hemiLight_s_3=vec3(0.8784313725490196,0.5882352941176471,0.9647058823529411);
+const vec3 dirLight=vec3(0.16);const vec3 dirLight_2=vec3(0.02);
+const vec3 hemiLightPos_1=vec3(100.0,100.0,-100.0);
+const vec3 hemiLightPos_2=vec3(-100.0,-100.0,100.0);
+const vec3 hemiLightPos_3=vec3(-100.0,100.0,100.0);
+const vec3 dirLightPos=vec3(-30,50,50);const vec3 dirLightPos_2=vec3(30,-50,-50);
+vec3 calcIrradiance_hemi(vec3 n,vec3 lp,vec3 g,vec3 s){float d=dot(n,normalize(lp));return mix(g,s,0.5*d+0.5);}
+vec3 calcIrradiance_dir(vec3 n,vec3 lp,vec3 l){return l*max(0.0,dot(n,normalize(lp)));}
+void main(){vec3 n=normalize(cross(dFdx(vPos),dFdy(vPos)));vec3 h=calcIrradiance_hemi(n,hemiLightPos_1,hemiLight_g,hemiLight_s_1)*0.9298+calcIrradiance_hemi(n,hemiLightPos_2,hemiLight_g,hemiLight_s_2)*0.196+calcIrradiance_hemi(n,hemiLightPos_3,hemiLight_g,hemiLight_s_3)*0.716;vec3 d=calcIrradiance_dir(n,dirLightPos,dirLight)+calcIrradiance_dir(n,dirLightPos_2,dirLight_2);gl_FragColor=vec4(objColor*h+d,1.0);}
+</script>
+
+<footer>
+<div class="copyright"><p>Alvaro Pastor PhD</p></div>
+<div class="social">
+<a class="www" href="https://alvaropastor.eu" target="_blank" rel="noopener">www</a>
+<a class="orcid" href="https://orcid.org/0000-0002-0467-8260" target="_blank" rel="noopener">orcid</a>
+<a class="linked" href="https://www.linkedin.com/in/alvaropastorphd" target="_blank" rel="noopener">in</a>
+</div>
+</footer>
+
+<div class="wrapper" id="wrapper"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.js"></script>
+
+<script>
+window.onload=function(){var w=new Webgl();window.onresize=function(){w.resize()}};
+
+function Webgl(){
+  this.vertShader=document.getElementById("vs").textContent;
+  this.fragShader=document.getElementById("fs").textContent;
+  this.setProps();
+  this.init();
+}
+Webgl.prototype.setProps=function(){
+  var w=document.body.clientWidth,h=window.innerHeight;
+  this.props={width:w,height:h,aspect:w/h,near:0.1,far:10000};
+};
+Webgl.prototype.init=function(){
+  var p=this.props;
+  this.scene=new THREE.Scene();
+  this.camera=new THREE.PerspectiveCamera(45,p.width/p.height,p.near,p.far);
+  this.camera.position.set(20,-10,10);
+  this.camera.lookAt(this.scene.position);
+  this.renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  this.renderer.setPixelRatio(1.5);
+  this.renderer.setClearColor(0x000000,0.3);
+  this.renderer.setSize(p.width,p.height);
+  this.div=document.getElementById("wrapper");
+  this.div.appendChild(this.renderer.domElement);
+  this.obj=new Obj(this);
+  this.render=this.render.bind(this);
+  requestAnimationFrame(this.render);
+};
+Webgl.prototype.resize=function(){
+  this.setProps();
+  var p=this.props;
+  this.renderer.setSize(p.width,p.height);
+  this.camera.aspect=p.aspect;
+  this.camera.updateProjectionMatrix();
+};
+Webgl.prototype.render=function(){
+  this.obj.uniforms.uTick.value+=1;
+  this.renderer.render(this.scene,this.camera);
+  requestAnimationFrame(this.render);
+};
+
+function Obj(webgl){this.webgl=webgl;this.init();}
+Obj.prototype.init=function(){
+  var g=new THREE.ParametricBufferGeometry(function(){return new THREE.Vector3(0,0,0)},100,100);
+  this.uniforms={uTick:{type:"f",value:0}};
+  var m=new THREE.ShaderMaterial({
+    vertexShader:this.webgl.vertShader,
+    fragmentShader:this.webgl.fragShader,
+    uniforms:this.uniforms,
+    side:THREE.DoubleSide,
+    extensions:{derivatives:true}
+  });
+  this.webgl.scene.add(new THREE.Mesh(g,m));
+};
+</script>
+</body>
+</html>
