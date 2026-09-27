@@ -43,7 +43,8 @@ footer .copyright p a{margin-left:0}
 }
 </style>
 </head>
-<body>
+<body> 
+<script src="three.r84.js"></script>
 <script id="vs" type="x-shader/x-vertex">
 varying vec3 vPos;uniform float uTick;const float PI=3.1415926;
 mat2 calcRotate2D(float t){float s=sin(t);float c=cos(t);return mat2(c,s,-s,c);}
@@ -78,7 +79,7 @@ void main(){vec3 n=normalize(cross(dFdx(vPos),dFdy(vPos)));vec3 h=calcIrradiance
 
 <div class="wrapper" id="wrapper"></div>
 
-<script src="three.r84.js"></script>
+
 <script>
 window.onload=function(){var w=new Webgl();window.onresize=function(){w.resize()}};
 
